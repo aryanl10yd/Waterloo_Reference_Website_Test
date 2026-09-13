@@ -11,5 +11,30 @@ function contact(){const links=[['◎','Instagram','@aryan.gupta','https://insta
 function mount(page){theme(page);app.innerHTML=page==='home'?home():page==='about'?about():contact();if(page==='home')initPCB();if(page==='about')initPhoto();document.querySelectorAll('[data-bubble]').forEach(e=>e.addEventListener('mouseenter',()=>{e.querySelector('.bubble').classList.remove('pop');void e.offsetWidth;e.querySelector('.bubble').classList.add('pop')}));}
 function baseScene(canvas){const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(35,1,.1,100);camera.position.set(0,2.2,6);const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=4;controls.maxDistance=9;const key=new THREE.PointLight(themes[document.body.dataset.page].accent,16,10);key.position.set(3,4,3);scene.add(key);scene.add(new THREE.AmbientLight(0xffffff,.8));function resize(){const r=canvas.parentElement.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();return {renderer,scene,camera,controls};}
 function initPCB(){const c=document.querySelector('#pcb');const {renderer,scene,camera,controls}=baseScene(c);const board=new THREE.Mesh(new THREE.BoxGeometry(3.8,.22,2.65),new THREE.MeshStandardMaterial({color:0x15111e,metalness:.5,roughness:.32,emissive:0x16052a}));scene.add(board);const chipMat=new THREE.MeshStandardMaterial({color:0x101014,metalness:.7,roughness:.25});for(let i=0;i<18;i++){const x=(i%6)*.5-1.25,z=Math.floor(i/6)*.65-.65;const part=new THREE.Mesh(new THREE.BoxGeometry(.32,.12,.3),chipMat);part.position.set(x,.18,z);scene.add(part)}for(let i=0;i<8;i++){const pin=new THREE.Mesh(new THREE.BoxGeometry(.08,.32,.08),new THREE.MeshStandardMaterial({color:0xb78bff,metalness:.9}));pin.position.set(-1.7+i*.45,.23,1.2);scene.add(pin);pin.clone().position.z=-1.2;scene.add(pin.clone())}const ring=new THREE.Mesh(new THREE.TorusGeometry(2.25,.018,8,100),new THREE.MeshBasicMaterial({color:0x9b5cff}));ring.rotation.x=Math.PI/2;ring.position.y=-.45;scene.add(ring);function tick(t){requestAnimationFrame(tick);board.rotation.y+=.002;ring.rotation.z=t*.00025;controls.update();renderer.render(scene,camera)}tick(0)}
+const textureLoader = new THREE.TextureLoader();
+
+const photoTexture = textureLoader.load(
+    './aryan.jfif',
+    (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+    }
+);
+
+const photoMaterial = new THREE.MeshStandardMaterial({
+    map: photoTexture,
+    roughness: 0.65,
+    metalness: 0.05
+});
+
+const photoGeometry = new THREE.PlaneGeometry(2.4, 3.0);
+
+const photo = new THREE.Mesh(
+    photoGeometry,
+    photoMaterial
+);
+
+photo.position.set(0, 0.35, 0.08);
+
+cardGroup.add(photo);
 function initPhoto(){const c=document.querySelector('#photo');const {renderer,scene,camera,controls}=baseScene(c);camera.position.set(0,1,6);const frame=new THREE.Mesh(new THREE.BoxGeometry(2.6,3.6,.18),new THREE.MeshStandardMaterial({color:0xd9a900,metalness:.75,roughness:.22,emissive:0x392800}));scene.add(frame);const inner=new THREE.Mesh(new THREE.BoxGeometry(2.22,3.05,.05),new THREE.MeshStandardMaterial({color:0x201b10,roughness:.8}));inner.position.z=.13;scene.add(inner);const txt=document.createElement('canvas');txt.width=700;txt.height=900;const x=txt.getContext('2d');const g=x.createLinearGradient(0,0,700,900);g.addColorStop(0,'#151515');g.addColorStop(1,'#5c4700');x.fillStyle=g;x.fillRect(0,0,700,900);x.fillStyle='#ffe79a';x.font='bold 72px Inter';x.fillText('ARYAN',55,150);x.fillText('GUPTA',55,235);x.font='32px Inter';x.fillText('PHOTO PLACEHOLDER',55,770);x.fillText('REPLACE WITH YOUR PHOTO',55,825);const tex=new THREE.CanvasTexture(txt);const photo=new THREE.Mesh(new THREE.PlaneGeometry(2.22,3.05),new THREE.MeshBasicMaterial({map:tex}));photo.position.z=.17;scene.add(photo);function tick(){requestAnimationFrame(tick);controls.update();renderer.render(scene,camera)}tick()}
 function route(){const page=location.hash.slice(1)||'home';mount(['home','about','contact'].includes(page)?page:'home')}addEventListener('hashchange',route);route();document.addEventListener('mousemove',e=>{document.querySelector('.cursor-glow').style.cssText=`left:${e.clientX}px;top:${e.clientY}px`});
