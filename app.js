@@ -13,76 +13,76 @@ function baseScene(canvas){const renderer=new THREE.WebGLRenderer({canvas,alpha:
 function initPCB(){const c=document.querySelector('#pcb');const {renderer,scene,camera,controls}=baseScene(c);const board=new THREE.Mesh(new THREE.BoxGeometry(3.8,.22,2.65),new THREE.MeshStandardMaterial({color:0x15111e,metalness:.5,roughness:.32,emissive:0x16052a}));scene.add(board);const chipMat=new THREE.MeshStandardMaterial({color:0x101014,metalness:.7,roughness:.25});for(let i=0;i<18;i++){const x=(i%6)*.5-1.25,z=Math.floor(i/6)*.65-.65;const part=new THREE.Mesh(new THREE.BoxGeometry(.32,.12,.3),chipMat);part.position.set(x,.18,z);scene.add(part)}for(let i=0;i<8;i++){const pin=new THREE.Mesh(new THREE.BoxGeometry(.08,.32,.08),new THREE.MeshStandardMaterial({color:0xb78bff,metalness:.9}));pin.position.set(-1.7+i*.45,.23,1.2);scene.add(pin);pin.clone().position.z=-1.2;scene.add(pin.clone())}const ring=new THREE.Mesh(new THREE.TorusGeometry(2.25,.018,8,100),new THREE.MeshBasicMaterial({color:0x9b5cff}));ring.rotation.x=Math.PI/2;ring.position.y=-.45;scene.add(ring);function tick(t){requestAnimationFrame(tick);board.rotation.y+=.002;ring.rotation.z=t*.00025;controls.update();renderer.render(scene,camera)}tick(0)}
 const textureLoader = new THREE.TextureLoader();
 
-function initPhoto() {
-    const c = document.querySelector('#photo');
-    const {renderer, scene, camera, controls} = baseScene(c);
+// function initPhoto() {
+//     const c = document.querySelector('#photo');
+//     const {renderer, scene, camera, controls} = baseScene(c);
 
-    camera.position.set(0, 1, 6);
+//     camera.position.set(0, 1, 6);
 
-    // --- Photo frame ---
-    const frame = new THREE.Mesh(
-        new THREE.BoxGeometry(2.6, 3.6, 0.18),
-        new THREE.MeshStandardMaterial({
-            color: 0xd9a900,
-            metalness: 0.75,
-            roughness: 0.22,
-            emissive: 0x392800
-        })
-    );
+//     // --- Photo frame ---
+//     const frame = new THREE.Mesh(
+//         new THREE.BoxGeometry(2.6, 3.6, 0.18),
+//         new THREE.MeshStandardMaterial({
+//             color: 0xd9a900,
+//             metalness: 0.75,
+//             roughness: 0.22,
+//             emissive: 0x392800
+//         })
+//     );
 
-    scene.add(frame);
+//     scene.add(frame);
 
-    // --- Dark inner backing ---
-    const inner = new THREE.Mesh(
-        new THREE.BoxGeometry(2.22, 3.05, 0.05),
-        new THREE.MeshStandardMaterial({
-            color: 0x201b10,
-            roughness: 0.8
-        })
-    );
+//     // --- Dark inner backing ---
+//     const inner = new THREE.Mesh(
+//         new THREE.BoxGeometry(2.22, 3.05, 0.05),
+//         new THREE.MeshStandardMaterial({
+//             color: 0x201b10,
+//             roughness: 0.8
+//         })
+//     );
 
-    inner.position.z = 0.13;
-    scene.add(inner);
+//     inner.position.z = 0.13;
+//     scene.add(inner);
 
-    // --- Your actual photo ---
-    const textureLoader = new THREE.TextureLoader();
+//     // --- Your actual photo ---
+//     const textureLoader = new THREE.TextureLoader();
 
-    textureLoader.load(
-        './aryan.jfif',
-        (texture) => {
-            texture.colorSpace = THREE.SRGBColorSpace;
+//     textureLoader.load(
+//         './aryan.jfif',
+//         (texture) => {
+//             texture.colorSpace = THREE.SRGBColorSpace;
 
-            const photoMaterial = new THREE.MeshStandardMaterial({
-                map: texture,
-                roughness: 0.65,
-                metalness: 0.05
-            });
+//             const photoMaterial = new THREE.MeshStandardMaterial({
+//                 map: texture,
+//                 roughness: 0.65,
+//                 metalness: 0.05
+//             });
 
-            const photoGeometry = new THREE.PlaneGeometry(2.22, 3.05);
+//             const photoGeometry = new THREE.PlaneGeometry(2.22, 3.05);
 
-            const photo = new THREE.Mesh(
-                photoGeometry,
-                photoMaterial
-            );
+//             const photo = new THREE.Mesh(
+//                 photoGeometry,
+//                 photoMaterial
+//             );
 
-            photo.position.z = 0.17;
+//             photo.position.z = 0.17;
 
-            scene.add(photo);
-        },
-        undefined,
-        (error) => {
-            console.error('Could not load photo:', error);
-        }
-    );
+//             scene.add(photo);
+//         },
+//         undefined,
+//         (error) => {
+//             console.error('Could not load photo:', error);
+//         }
+//     );
 
-    // --- Animation ---
-    function tick() {
-        requestAnimationFrame(tick);
+//     // --- Animation ---
+//     function tick() {
+//         requestAnimationFrame(tick);
 
-        controls.update();
-        renderer.render(scene, camera);
-    }
+//         controls.update();
+//         renderer.render(scene, camera);
+//     }
 
-    tick();
-}
+//     tick();
+// }
 function route(){const page=location.hash.slice(1)||'home';mount(['home','about','contact'].includes(page)?page:'home')}addEventListener('hashchange',route);route();document.addEventListener('mousemove',e=>{document.querySelector('.cursor-glow').style.cssText=`left:${e.clientX}px;top:${e.clientY}px`});
