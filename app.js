@@ -1,42 +1,1093 @@
-edit the following js code so that the image is in the photoframe object, instead of the placeholder just being there:
-
+```js
 import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const themes={home:{accent:'#9b5cff',accent2:'#5e2cff',hot:'#d5b5ff'},about:{accent:'#e4b82c',accent2:'#8e6500',hot:'#ffe79a'},contact:{accent:'#27d98b',accent2:'#08794b',hot:'#a8ffd4'}};
-const app=document.querySelector('#app');
-function theme(page){const t=themes[page];for(const [k,v] of Object.entries(t))document.documentElement.style.setProperty('--'+k,v);document.body.dataset.page=page;document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));}
-function shell(inner){return `<section class="page">${inner}</section>`}
-function home(){return shell(`<div class="hero-grid"><div class="hero"><div class="eyebrow">Incoming Geospatial Data Science · University of Waterloo</div><h1>Build.<br><em>Pray.</em><br>Learn</h1><p>I’m Aryan Gupta — a builder working at the intersection of software, hardware, AI and robotics. I like turning ambitious ideas into things that actually run.</p><div class="actions"><a class="btn" href="#about">Explore my work ↗</a><a class="btn secondary" href="#contact">Get in touch</a></div></div><div class="scene-card"><canvas id="pcb"></canvas><div class="scene-hint">Drag · rotate · scroll · inspect the PCB</div></div></div><div class="content"><div class="section-head"><h2>What I do</h2><p>Learning is a process that takes everyone time. I understand that someone's day 1 is my day 100.</p></div><div class="cards"><article class="card"><h3>Software</h3><p>Python, Java, C++/C, data structures and algorithms, web development, databases</p></article><article class="card"><h3>AI</h3><p>Machine learning, Reinforcement learning, computer vision, embeddings, PyTorch/TensorFlow fundamentals and the mathematics behind intelligent systems.</p></article><article class="card"><h3>Hardware</h3><p>Raspberry Pi, ESP32, electronics, CAD/PCB design</p></article><article class="card"><h3>Robotics</h3><p>My long-term direction: intelligent robots that combine perception, planning, control and useful interaction, to replace tools not humans.</p></article><article class="card wide"><h3>Companies I’d love to learn from</h3><p><span class="tag">OpenAI</span><span class="tag">Microsoft</span><span class="tag">Google</span></p><p>AI research, developer platforms, hardware/software systems and the people building technology at enormous scale.</p></article><article class="card wide"><h3>My passion</h3><p>AI Robotics is an intersection that combines various degrees into one, creating what is essentially a "jack of all trades" role in the robotics industry that has the power to change the world for the better, from designing better cars to innovating on devices or even creating something new in the process. I may not have gotten accepted into Waterloo Mechatronics this year, but my goal will stand true for as long as I live.</p></article><article class="card wide project"><div><h3>ChessInsight</h3><p>A machine-learning chess analysis project using Python, pandas, pytorch and scikit-learn.</p></div><a href="https://github.com/" target="_blank" rel="noreferrer">GitHub ↗</a></article></div></div></section>`)}
-function about(){return shell(`<div class="about-layout"><div class="photo-card"><canvas id="photo"></canvas><div class="photo-note">Replace this placeholder texture with your own photo.</div></div><div class="about-copy"><div class="eyebrow">About the builder</div><h1>Curious by default.<br>Technical by choice.</h1><p>I’m an incoming Geospatial Data Science student at Waterloo who wants to use university as an accelerator — learning aggressively, meeting people who build, and turning that knowledge into proof-of-work.</p><div class="timeline"><div><strong>High School → St. Joan of Arc CSS</strong><span>Programming · robotics · leadership · building things</span></div><div><strong>Engineering Portfolio</strong><span>Software development · electronics · CAD/PCB · AI & machine learning · robotics</span></div><div><strong>Projects</strong><span>ChessInsight · ML experiments · PDF/RAG systems · apps · hardware prototypes</span></div><div><strong>Hackathons</strong><span>Hack the North · Speedrun Alpha · LabLab.AI and more to come</span></div></div></div></div><div class="content"><div class="section-head"><h2>The through-line</h2><p>Don’t just collect technologies. Understand how they connect.</p></div><div class="cards"><article class="card"><h3>Learn deeply</h3><p>Use coursework as a foundation, then go beyond it through projects, documentation, papers and deliberate practice.</p></article><article class="card"><h3>Build publicly</h3><p>Projects should be evidence: readable repositories, working demos, clear writeups and decisions I can defend.</p></article><article class="card"><h3>Stay multidisciplinary</h3><p>Software, hardware and AI reinforce each other. The goal is not to be everything — it’s to understand enough of the whole system to build better things.</p></article></div></div></section>`)}
-function contact(){const links=[['◎','Instagram','@aryan.gupta','https://instagram.com/'],['in','LinkedIn','/in/aryangupta','https://linkedin.com/'],['●','GitHub','github.com/aryangupta','https://github.com/'],['◉','Discord','l10yd','https://discord.com/'],['✉','Email','aryan@waterloo.ca','mailto:aryan@waterloo.ca']];return `<section class="page"><div class="contact-page"><div class="contact-title"><div class="eyebrow">Let’s build something</div><h1>Say<br><em>hello.</em></h1><p>No giant contact form. Just a handful of places where I actually exist.</p></div><div class="contact-links">${links.map((x,i)=>`<a class="contact-link" href="${x[3]}" target="_blank" rel="noreferrer" data-bubble="${i}"><span class="bubble">${x[0]}</span><span><strong>${x[1]}</strong><small>${x[2]}</small></span><span class="arrow">↗</span></a>`).join('')}</div></div></section>`}
-function mount(page){theme(page);app.innerHTML=page==='home'?home():page==='about'?about():contact();if(page==='home')initPCB();if(page==='about')initPhoto();document.querySelectorAll('[data-bubble]').forEach(e=>e.addEventListener('mouseenter',()=>{e.querySelector('.bubble').classList.remove('pop');void e.offsetWidth;e.querySelector('.bubble').classList.add('pop')}));}
-function baseScene(canvas){const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(35,1,.1,100);camera.position.set(0,2.2,6);const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=4;controls.maxDistance=9;const key=new THREE.PointLight(themes[document.body.dataset.page].accent,16,10);key.position.set(3,4,3);scene.add(key);scene.add(new THREE.AmbientLight(0xffffff,.8));function resize(){const r=canvas.parentElement.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();return {renderer,scene,camera,controls};}
-function initPCB(){const c=document.querySelector('#pcb');const {renderer,scene,camera,controls}=baseScene(c);const board=new THREE.Mesh(new THREE.BoxGeometry(3.8,.22,2.65),new THREE.MeshStandardMaterial({color:0x15111e,metalness:.5,roughness:.32,emissive:0x16052a}));scene.add(board);const chipMat=new THREE.MeshStandardMaterial({color:0x101014,metalness:.7,roughness:.25});for(let i=0;i<18;i++){const x=(i%6)*.5-1.25,z=Math.floor(i/6)*.65-.65;const part=new THREE.Mesh(new THREE.BoxGeometry(.32,.12,.3),chipMat);part.position.set(x,.18,z);scene.add(part)}for(let i=0;i<8;i++){const pin=new THREE.Mesh(new THREE.BoxGeometry(.08,.32,.08),new THREE.MeshStandardMaterial({color:0xb78bff,metalness:.9}));pin.position.set(-1.7+i*.45,.23,1.2);scene.add(pin);pin.clone().position.z=-1.2;scene.add(pin.clone())}const ring=new THREE.Mesh(new THREE.TorusGeometry(2.25,.018,8,100),new THREE.MeshBasicMaterial({color:0x9b5cff}));ring.rotation.x=Math.PI/2;ring.position.y=-.45;scene.add(ring);function tick(t){requestAnimationFrame(tick);board.rotation.y+=.002;ring.rotation.z=t*.00025;controls.update();renderer.render(scene,camera)}tick(0)}
-const textureLoader = new THREE.TextureLoader();
 
-const photoTexture = textureLoader.load(
-    './aryan.jfif',
-    (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
+// ============================================================
+// THEMES
+// ============================================================
+
+const themes = {
+    home: {
+        accent: '#9b5cff',
+        accent2: '#5e2cff',
+        hot: '#d5b5ff'
+    },
+
+    about: {
+        accent: '#e4b82c',
+        accent2: '#8e6500',
+        hot: '#ffe79a'
+    },
+
+    contact: {
+        accent: '#27d98b',
+        accent2: '#08794b',
+        hot: '#a8ffd4'
+    }
+};
+
+
+// ============================================================
+// APP
+// ============================================================
+
+const app = document.querySelector('#app');
+
+
+// ============================================================
+// THEME HANDLING
+// ============================================================
+
+function theme(page) {
+    const t = themes[page];
+
+    for (const [key, value] of Object.entries(t)) {
+        document.documentElement.style.setProperty('--' + key, value);
+    }
+
+    document.body.dataset.page = page;
+
+    document.querySelectorAll('nav a').forEach(a => {
+        a.classList.toggle(
+            'active',
+            a.dataset.page === page
+        );
+    });
+}
+
+
+// ============================================================
+// PAGE SHELL
+// ============================================================
+
+function shell(inner) {
+    return `<section class="page">${inner}</section>`;
+}
+
+
+// ============================================================
+// HOME PAGE
+// ============================================================
+
+function home() {
+    return shell(`
+        <div class="hero-grid">
+
+            <div class="hero">
+
+                <div class="eyebrow">
+                    Incoming Geospatial Data Science · University of Waterloo
+                </div>
+
+                <h1>
+                    Build.<br>
+                    <em>Pray.</em><br>
+                    Learn
+                </h1>
+
+                <p>
+                    I’m Aryan Gupta — a builder working at the intersection
+                    of software, hardware, AI and robotics. I like turning
+                    ambitious ideas into things that actually run.
+                </p>
+
+                <div class="actions">
+                    <a class="btn" href="#about">
+                        Explore my work ↗
+                    </a>
+
+                    <a class="btn secondary" href="#contact">
+                        Get in touch
+                    </a>
+                </div>
+
+            </div>
+
+
+            <div class="scene-card">
+
+                <canvas id="pcb"></canvas>
+
+                <div class="scene-hint">
+                    Drag · rotate · scroll · inspect the PCB
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+            <div class="section-head">
+
+                <h2>What I do</h2>
+
+                <p>
+                    Learning is a process that takes everyone time.
+                    I understand that someone's day 1 is my day 100.
+                </p>
+
+            </div>
+
+
+            <div class="cards">
+
+                <article class="card">
+                    <h3>Software</h3>
+                    <p>
+                        Python, Java, C++/C, data structures and algorithms,
+                        web development, databases
+                    </p>
+                </article>
+
+
+                <article class="card">
+                    <h3>AI</h3>
+                    <p>
+                        Machine learning, Reinforcement learning,
+                        computer vision, embeddings, PyTorch/TensorFlow
+                        fundamentals and the mathematics behind intelligent systems.
+                    </p>
+                </article>
+
+
+                <article class="card">
+                    <h3>Hardware</h3>
+                    <p>
+                        Raspberry Pi, ESP32, electronics, CAD/PCB design
+                    </p>
+                </article>
+
+
+                <article class="card">
+                    <h3>Robotics</h3>
+                    <p>
+                        My long-term direction: intelligent robots that combine
+                        perception, planning, control and useful interaction,
+                        to replace tools not humans.
+                    </p>
+                </article>
+
+
+                <article class="card wide">
+
+                    <h3>Companies I’d love to learn from</h3>
+
+                    <p>
+                        <span class="tag">OpenAI</span>
+                        <span class="tag">Microsoft</span>
+                        <span class="tag">Google</span>
+                    </p>
+
+                    <p>
+                        AI research, developer platforms, hardware/software
+                        systems and the people building technology at enormous scale.
+                    </p>
+
+                </article>
+
+
+                <article class="card wide">
+
+                    <h3>My passion</h3>
+
+                    <p>
+                        AI Robotics is an intersection that combines various
+                        degrees into one, creating what is essentially a
+                        "jack of all trades" role in the robotics industry
+                        that has the power to change the world for the better,
+                        from designing better cars to innovating on devices
+                        or even creating something new in the process.
+                        I may not have gotten accepted into Waterloo Mechatronics
+                        this year, but my goal will stand true for as long as I live.
+                    </p>
+
+                </article>
+
+
+                <article class="card wide project">
+
+                    <div>
+
+                        <h3>ChessInsight</h3>
+
+                        <p>
+                            A machine-learning chess analysis project using
+                            Python, pandas, pytorch and scikit-learn.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="https://github.com/"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        GitHub ↗
+                    </a>
+
+                </article>
+
+            </div>
+
+        </div>
+    `);
+}
+
+
+// ============================================================
+// ABOUT PAGE
+// ============================================================
+
+function about() {
+    return shell(`
+        <div class="about-layout">
+
+            <div class="photo-card">
+
+                <canvas id="photo"></canvas>
+
+                <div class="photo-note">
+                    Aryan Gupta
+                </div>
+
+            </div>
+
+
+            <div class="about-copy">
+
+                <div class="eyebrow">
+                    About the builder
+                </div>
+
+                <h1>
+                    Curious by default.<br>
+                    Technical by choice.
+                </h1>
+
+                <p>
+                    I’m an incoming Geospatial Data Science student at Waterloo
+                    who wants to use university as an accelerator — learning
+                    aggressively, meeting people who build, and turning that
+                    knowledge into proof-of-work.
+                </p>
+
+
+                <div class="timeline">
+
+                    <div>
+                        <strong>
+                            High School → St. Joan of Arc CSS
+                        </strong>
+
+                        <span>
+                            Programming · robotics · leadership · building things
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <strong>
+                            Engineering Portfolio
+                        </strong>
+
+                        <span>
+                            Software development · electronics · CAD/PCB ·
+                            AI & machine learning · robotics
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <strong>
+                            Projects
+                        </strong>
+
+                        <span>
+                            ChessInsight · ML experiments · PDF/RAG systems ·
+                            apps · hardware prototypes
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <strong>
+                            Hackathons
+                        </strong>
+
+                        <span>
+                            Hack the North · Speedrun Alpha · LabLab.AI
+                            and more to come
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+            <div class="section-head">
+
+                <h2>The through-line</h2>
+
+                <p>
+                    Don’t just collect technologies. Understand how they connect.
+                </p>
+
+            </div>
+
+
+            <div class="cards">
+
+                <article class="card">
+
+                    <h3>Learn deeply</h3>
+
+                    <p>
+                        Use coursework as a foundation, then go beyond it
+                        through projects, documentation, papers and deliberate practice.
+                    </p>
+
+                </article>
+
+
+                <article class="card">
+
+                    <h3>Build publicly</h3>
+
+                    <p>
+                        Projects should be evidence: readable repositories,
+                        working demos, clear writeups and decisions I can defend.
+                    </p>
+
+                </article>
+
+
+                <article class="card">
+
+                    <h3>Stay multidisciplinary</h3>
+
+                    <p>
+                        Software, hardware and AI reinforce each other.
+                        The goal is not to be everything — it’s to understand
+                        enough of the whole system to build better things.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </div>
+    `);
+}
+
+
+// ============================================================
+// CONTACT PAGE
+// ============================================================
+
+function contact() {
+
+    const links = [
+        [
+            '◎',
+            'Instagram',
+            '@aryan.gupta',
+            'https://instagram.com/'
+        ],
+
+        [
+            'in',
+            'LinkedIn',
+            '/in/aryangupta',
+            'https://linkedin.com/'
+        ],
+
+        [
+            '●',
+            'GitHub',
+            'github.com/aryangupta',
+            'https://github.com/'
+        ],
+
+        [
+            '◉',
+            'Discord',
+            'l10yd',
+            'https://discord.com/'
+        ],
+
+        [
+            '✉',
+            'Email',
+            'aryan@waterloo.ca',
+            'mailto:aryan@waterloo.ca'
+        ]
+    ];
+
+
+    return `
+        <section class="page">
+
+            <div class="contact-page">
+
+                <div class="contact-title">
+
+                    <div class="eyebrow">
+                        Let’s build something
+                    </div>
+
+                    <h1>
+                        Say<br>
+                        <em>hello.</em>
+                    </h1>
+
+                    <p>
+                        No giant contact form. Just a handful of places
+                        where I actually exist.
+                    </p>
+
+                </div>
+
+
+                <div class="contact-links">
+
+                    ${links.map((x, i) => `
+
+                        <a
+                            class="contact-link"
+                            href="${x[3]}"
+                            target="_blank"
+                            rel="noreferrer"
+                            data-bubble="${i}"
+                        >
+
+                            <span class="bubble">
+                                ${x[0]}
+                            </span>
+
+                            <span>
+
+                                <strong>
+                                    ${x[1]}
+                                </strong>
+
+                                <small>
+                                    ${x[2]}
+                                </small>
+
+                            </span>
+
+                            <span class="arrow">
+                                ↗
+                            </span>
+
+                        </a>
+
+                    `).join('')}
+
+                </div>
+
+            </div>
+
+        </section>
+    `;
+}
+
+
+// ============================================================
+// PAGE MOUNTING
+// ============================================================
+
+function mount(page) {
+
+    theme(page);
+
+    if (page === 'home') {
+        app.innerHTML = home();
+    }
+
+    else if (page === 'about') {
+        app.innerHTML = about();
+    }
+
+    else {
+        app.innerHTML = contact();
+    }
+
+
+    // Initialize the appropriate Three.js scene
+
+    if (page === 'home') {
+        initPCB();
+    }
+
+    if (page === 'about') {
+        initPhoto();
+    }
+
+
+    // Contact bubble animations
+
+    document
+        .querySelectorAll('[data-bubble]')
+        .forEach(element => {
+
+            element.addEventListener('mouseenter', () => {
+
+                const bubble = element.querySelector('.bubble');
+
+                bubble.classList.remove('pop');
+
+                void element.offsetWidth;
+
+                bubble.classList.add('pop');
+
+            });
+
+        });
+}
+
+
+// ============================================================
+// THREE.JS BASE SCENE
+// ============================================================
+
+function baseScene(canvas) {
+
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true
+    });
+
+    renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio, 2)
+    );
+
+
+    const scene = new THREE.Scene();
+
+
+    const camera = new THREE.PerspectiveCamera(
+        35,
+        1,
+        0.1,
+        100
+    );
+
+    camera.position.set(
+        0,
+        2.2,
+        6
+    );
+
+
+    const controls = new OrbitControls(
+        camera,
+        canvas
+    );
+
+    controls.enableDamping = true;
+    controls.enablePan = false;
+
+    controls.minDistance = 4;
+    controls.maxDistance = 9;
+
+
+    const currentTheme =
+        themes[document.body.dataset.page];
+
+
+    const key = new THREE.PointLight(
+        currentTheme.accent,
+        16,
+        10
+    );
+
+    key.position.set(
+        3,
+        4,
+        3
+    );
+
+    scene.add(key);
+
+
+    const ambient = new THREE.AmbientLight(
+        0xffffff,
+        0.8
+    );
+
+    scene.add(ambient);
+
+
+    function resize() {
+
+        const rect =
+            canvas.parentElement.getBoundingClientRect();
+
+        renderer.setSize(
+            rect.width,
+            rect.height,
+            false
+        );
+
+        camera.aspect =
+            rect.width / rect.height;
+
+        camera.updateProjectionMatrix();
+    }
+
+
+    window.addEventListener(
+        'resize',
+        resize
+    );
+
+    resize();
+
+
+    return {
+        renderer,
+        scene,
+        camera,
+        controls
+    };
+}
+
+
+// ============================================================
+// PCB SCENE
+// ============================================================
+
+function initPCB() {
+
+    const canvas =
+        document.querySelector('#pcb');
+
+    if (!canvas) return;
+
+
+    const {
+        renderer,
+        scene,
+        camera,
+        controls
+    } = baseScene(canvas);
+
+
+    // PCB board
+
+    const board = new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            3.8,
+            0.22,
+            2.65
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color: 0x15111e,
+            metalness: 0.5,
+            roughness: 0.32,
+            emissive: 0x16052a
+        })
+
+    );
+
+    scene.add(board);
+
+
+    // Chips
+
+    const chipMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x101014,
+            metalness: 0.7,
+            roughness: 0.25
+        });
+
+
+    for (let i = 0; i < 18; i++) {
+
+        const x =
+            (i % 6) * 0.5 - 1.25;
+
+        const z =
+            Math.floor(i / 6) * 0.65 - 0.65;
+
+
+        const part = new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                0.32,
+                0.12,
+                0.3
+            ),
+
+            chipMaterial
+
+        );
+
+
+        part.position.set(
+            x,
+            0.18,
+            z
+        );
+
+
+        scene.add(part);
+    }
+
+
+    // Pins
+
+    const pinMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xb78bff,
+            metalness: 0.9,
+            roughness: 0.2
+        });
+
+
+    for (let i = 0; i < 8; i++) {
+
+        const pin =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    0.08,
+                    0.32,
+                    0.08
+                ),
+                pinMaterial
+            );
+
+
+        pin.position.set(
+            -1.7 + i * 0.45,
+            0.23,
+            1.2
+        );
+
+
+        scene.add(pin);
+
+
+        const oppositePin =
+            pin.clone();
+
+        oppositePin.position.z =
+            -1.2;
+
+        scene.add(oppositePin);
+    }
+
+
+    // Glowing ring
+
+    const ring = new THREE.Mesh(
+
+        new THREE.TorusGeometry(
+            2.25,
+            0.018,
+            8,
+            100
+        ),
+
+        new THREE.MeshBasicMaterial({
+            color: 0x9b5cff
+        })
+
+    );
+
+
+    ring.rotation.x =
+        Math.PI / 2;
+
+    ring.position.y =
+        -0.45;
+
+    scene.add(ring);
+
+
+    // Animation
+
+    function tick(time) {
+
+        requestAnimationFrame(tick);
+
+
+        board.rotation.y += 0.002;
+
+        ring.rotation.z =
+            time * 0.00025;
+
+
+        controls.update();
+
+        renderer.render(
+            scene,
+            camera
+        );
+    }
+
+
+    tick(0);
+}
+
+
+// ============================================================
+// PHOTO FRAME SCENE
+// ============================================================
+
+function initPhoto() {
+
+    const canvas =
+        document.querySelector('#photo');
+
+    if (!canvas) return;
+
+
+    const {
+        renderer,
+        scene,
+        camera,
+        controls
+    } = baseScene(canvas);
+
+
+    // Camera position for portrait frame
+
+    camera.position.set(
+        0,
+        1,
+        6
+    );
+
+
+    // --------------------------------------------------------
+    // OUTER GOLD FRAME
+    // --------------------------------------------------------
+
+    const frameMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0xd9a900,
+            metalness: 0.75,
+            roughness: 0.22,
+            emissive: 0x392800
+        });
+
+
+    const frame =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                2.6,
+                3.6,
+                0.18
+            ),
+            frameMaterial
+        );
+
+
+    scene.add(frame);
+
+
+    // --------------------------------------------------------
+    // INNER DARK BACKING
+    // --------------------------------------------------------
+
+    const backingMaterial =
+        new THREE.MeshStandardMaterial({
+            color: 0x201b10,
+            roughness: 0.8
+        });
+
+
+    const backing =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                2.22,
+                3.05,
+                0.05
+            ),
+            backingMaterial
+        );
+
+
+    backing.position.z =
+        0.13;
+
+
+    scene.add(backing);
+
+
+    // --------------------------------------------------------
+    // LOAD YOUR ACTUAL PHOTO
+    // --------------------------------------------------------
+
+    const textureLoader =
+        new THREE.TextureLoader();
+
+
+    textureLoader.load(
+
+        './aryan.jfif',
+
+        function(texture) {
+
+            // Correct color handling
+            texture.colorSpace =
+                THREE.SRGBColorSpace;
+
+
+            // Prevent the image from repeating
+            texture.wrapS =
+                THREE.ClampToEdgeWrapping;
+
+            texture.wrapT =
+                THREE.ClampToEdgeWrapping;
+
+
+            // Photo material
+            const photoMaterial =
+                new THREE.MeshStandardMaterial({
+
+                    map: texture,
+
+                    roughness: 0.65,
+
+                    metalness: 0.05
+
+                });
+
+
+            // Photo plane
+            const photoGeometry =
+                new THREE.PlaneGeometry(
+                    2.22,
+                    3.05
+                );
+
+
+            const photo =
+                new THREE.Mesh(
+                    photoGeometry,
+                    photoMaterial
+                );
+
+
+            // Put the photo directly
+            // in front of the backing
+            photo.position.z =
+                0.17;
+
+
+            scene.add(photo);
+
+        },
+
+
+        // Loading progress
+        undefined,
+
+
+        // Loading error
+        function(error) {
+
+            console.error(
+                'ERROR: Could not load ./aryan.jfif',
+                error
+            );
+
+        }
+
+    );
+
+
+    // --------------------------------------------------------
+    // PHOTO FRAME ANIMATION
+    // --------------------------------------------------------
+
+    function tick() {
+
+        requestAnimationFrame(tick);
+
+        controls.update();
+
+        renderer.render(
+            scene,
+            camera
+        );
+
+    }
+
+
+    tick();
+}
+
+
+// ============================================================
+// ROUTING
+// ============================================================
+
+function route() {
+
+    const page =
+        location.hash.slice(1) || 'home';
+
+
+    if (
+        page === 'home' ||
+        page === 'about' ||
+        page === 'contact'
+    ) {
+
+        mount(page);
+
+    }
+
+    else {
+
+        mount('home');
+
+    }
+}
+
+
+window.addEventListener(
+    'hashchange',
+    route
+);
+
+
+route();
+
+
+// ============================================================
+// CURSOR GLOW
+// ============================================================
+
+document.addEventListener(
+    'mousemove',
+    event => {
+
+        const glow =
+            document.querySelector('.cursor-glow');
+
+        if (!glow) return;
+
+
+        glow.style.cssText =
+            `left:${event.clientX}px;top:${event.clientY}px`;
+
     }
 );
-
-const photoMaterial = new THREE.MeshStandardMaterial({
-    map: photoTexture,
-    roughness: 0.65,
-    metalness: 0.05
-});
-
-const photoGeometry = new THREE.PlaneGeometry(2.4, 3.0);
-
-const photo = new THREE.Mesh(
-    photoGeometry,
-    photoMaterial
-);
-
-photo.position.set(0, 0.35, 0.08);
-
-cardGroup.add(photo);
-// function initPhoto(){const c=document.querySelector('#photo');const {renderer,scene,camera,controls}=baseScene(c);camera.position.set(0,1,6);const frame=new THREE.Mesh(new THREE.BoxGeometry(2.6,3.6,.18),new THREE.MeshStandardMaterial({color:0xd9a900,metalness:.75,roughness:.22,emissive:0x392800}));scene.add(frame);const inner=new THREE.Mesh(new THREE.BoxGeometry(2.22,3.05,.05),new THREE.MeshStandardMaterial({color:0x201b10,roughness:.8}));inner.position.z=.13;scene.add(inner);const txt=document.createElement('canvas');txt.width=700;txt.height=900;const x=txt.getContext('2d');const g=x.createLinearGradient(0,0,700,900);g.addColorStop(0,'#151515');g.addColorStop(1,'#5c4700');x.fillStyle=g;x.fillRect(0,0,700,900);x.fillStyle='#ffe79a';x.font='bold 72px Inter';x.fillText('ARYAN',55,150);x.fillText('GUPTA',55,235);x.font='32px Inter';x.fillText('PHOTO PLACEHOLDER',55,770);x.fillText('REPLACE WITH YOUR PHOTO',55,825);const tex=new THREE.CanvasTexture(txt);const photo=new THREE.Mesh(new THREE.PlaneGeometry(2.22,3.05),new THREE.MeshBasicMaterial({map:tex}));photo.position.z=.17;scene.add(photo);function tick(){requestAnimationFrame(tick);controls.update();renderer.render(scene,camera)}tick()}
-function route(){const page=location.hash.slice(1)||'home';mount(['home','about','contact'].includes(page)?page:'home')}addEventListener('hashchange',route);route();document.addEventListener('mousemove',e=>{document.querySelector('.cursor-glow').style.cssText=`left:${e.clientX}px;top:${e.clientY}px`});
+```
